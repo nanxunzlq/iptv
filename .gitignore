@@ -1,0 +1,19 @@
+# ===== OS / 编辑器垃圾文件 =====
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===== 临时 / 日志 =====
+*.tmp
+*.bak
+*.log
+*.swp
+~*
+
+# ===== IDE =====
+.vscode/
+.idea/
+
+# ===== 工具生成的临时诊断文件 =====
+_diag*.txt
