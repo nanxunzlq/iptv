@@ -1,0 +1,4 @@
+[submodule "tools/iptv-api"]
+	path = tools/iptv-api
+	url = https://github.com/Guovin/iptv-api.git
+	shallow = true
