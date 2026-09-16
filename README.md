@@ -1,8 +1,12 @@
 # IPTV 聚合仓库
 
-个人 IPTV 直播源与配套工具合集。以**河南移动直播源**为核心，同时收纳频道列表、源生成工具与链接校验工具。
+个人 IPTV 直播源与配套工具一站式合集：
 
-> 2026-09-16 由原 5 个独立仓库（`iptv`、`iptv-api`、`Beijing-IPTV`、`iptv-checker`、`iptv-org`）合并而成。
+- **河南移动直播源**（核心）—— 97 个频道，固定根目录 `hn.txt`，订阅地址长期稳定
+- **北京联通/移动频道列表** —— 组播与单播 m3u 全套
+- **工具箱** —— `iptv-api` 源自动采集生成（submodule）、`iptv-checker` 链接批量探活
+
+> 2026-09-16 由原 5 个独立仓库（`iptv`、`iptv-api`、`Beijing-IPTV`、`iptv-checker`、`iptv-org`）合并而成。各组件来源与许可证不同，详见[许可证说明](#四许可证)。
 
 ---
 
@@ -112,23 +116,6 @@ git submodule update --init --depth 1 tools/iptv-api
 
 来源：`Guovin/iptv-api`（**AGPL-3.0**，见下方许可证说明）
 
-### 一个橙子Pro — Windows 端工具（Releases 分发）
-
-IPTV 直播源检测 / 播放工具，Windows 安装包。
-
-因安装包体积达 **110.16 MB**，超过 GitHub 单文件 **100 MiB** 的硬限制，无法作为仓库文件存放，改由 **Releases** 发布：
-
-**下载地址**：https://github.com/nanxunzlq/iptv/releases
-
-| 项 | 值 |
-|---|---|
-| 版本 | `1.4.16-beta.7`（x64） |
-| 体积 | 110.16 MB |
-| 打包方式 | NSIS 安装程序，**无数字签名** |
-| 版权 | `Copyright © 2024 yigechengzi`（第三方工具，未提供许可证） |
-
-> 本仓库仅作存档分发，不对该工具的安全性、功能性与合法性作任何保证。完整说明与校验值见 Releases 页面。
-
 ---
 
 ## 四、许可证
@@ -141,7 +128,6 @@ IPTV 直播源检测 / 播放工具，Windows 安装包。
 | `lists/Beijing-IPTV/` | `qwerttvv/Beijing-IPTV` | CC0-1.0 | 无 |
 | `tools/iptv-checker/` | `freearhey/iptv-checker` | MIT | 无 |
 | `tools/iptv-api/` | `Guovin/iptv-api` | **AGPL-3.0** | **强 copyleft** |
-| Releases 附件：一个橙子Pro | `yigechengzi` | 未提供许可证 | — |
 
 完整第三方清单与来源见 [THIRD-PARTY.md](THIRD-PARTY.md)。
 
