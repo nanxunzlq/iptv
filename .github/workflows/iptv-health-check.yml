@@ -51,9 +51,9 @@ jobs:
           echo "txt=$txt_count" >> "$GITHUB_OUTPUT"
           echo "m3u 频道数=$m3u_count txt 频道数=$txt_count"
 
-          # 1) 声明一致性：README 表格中的 94 / 54
-          readme_m3u=$(grep -oP 'M3U（含 tvg-id / EPG 地址） \| \*\*\K[0-9]+' README.md || echo 0)
-          readme_txt=$(grep -oP 'DIYP（`频道名,URL` \+ `#genre#` 分组） \| \K[0-9]+' README.md || echo 0)
+          # 1) 声明一致性：README 表格中的 94 / 94（频道数可能带 ** 粗体标记）
+          readme_m3u=$(grep -oP 'M3U（含 tvg-id / EPG 地址） \| \*{0,2}\K[0-9]+' README.md || echo 0)
+          readme_txt=$(grep -oP 'DIYP（`频道名,URL` \+ `#genre#` 分组） \| \*{0,2}\K[0-9]+' README.md || echo 0)
           echo "README 声明 m3u=$readme_m3u txt=$readme_txt"
 
           if [ "$readme_m3u" != "$m3u_count" ]; then
