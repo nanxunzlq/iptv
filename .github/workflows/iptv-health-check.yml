@@ -1,0 +1,213 @@
+name: 仓库自检
+
+on:
+  schedule:
+    # 每周一 03:17 UTC（错开整点，避开 GitHub Actions 高峰）
+    - cron: '17 3 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - '河南移动/**'
+      - 'README.md'
+      - '.github/workflows/iptv-health-check.yml'
+  workflow_dispatch:
+    inputs:
+      probe_streams:
+        description: '是否实测运营商直播源（需本地宽带环境，CI 上大概率失败）'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: repo-self-check
+  cancel-in-progress: false
+
+jobs:
+  lint:
+    name: 播放列表一致性检查
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验播放列表结构与 README 声明是否一致
+        id: lint
+        env:
+          M3U: 河南移动/河南移动.m3u
+          TXT: 河南移动/河南移动.txt
+        run: |
+          set -uo pipefail
+          fail=0
+
+          m3u_count=$(grep -c '^#EXTINF' "$M3U" || true)
+          # txt 计数需排除空行与 #genre# 分组行，只统计「频道名,URL」条目
+          txt_count=$(grep -cE '^[^#].*,[^,]*https?://' "$TXT" || true)
+          echo "m3u=$m3u_count" >> "$GITHUB_OUTPUT"
+          echo "txt=$txt_count" >> "$GITHUB_OUTPUT"
+          echo "m3u 频道数=$m3u_count txt 频道数=$txt_count"
+
+          # 1) 声明一致性：README 表格中的 94 / 54
+          readme_m3u=$(grep -oP 'M3U（含 tvg-id / EPG 地址） \| \*\*\K[0-9]+' README.md || echo 0)
+          readme_txt=$(grep -oP 'DIYP（`频道名,URL` \+ `#genre#` 分组） \| \K[0-9]+' README.md || echo 0)
+          echo "README 声明 m3u=$readme_m3u txt=$readme_txt"
+
+          if [ "$readme_m3u" != "$m3u_count" ]; then
+            echo "::error::README 声明 m3u 频道数为 $readme_m3u，实际为 $m3u_count —— 请同步更新 README"
+            fail=1
+          fi
+          if [ "$readme_txt" != "$txt_count" ]; then
+            echo "::error::README 声明 txt 频道数为 $readme_txt，实际为 $txt_count —— 请同步更新 README"
+            fail=1
+          fi
+
+          # 2) 结构完整性：m3u 每个 #EXTINF 后必须有 URL，且 URL 唯一
+          mapfile -t urls < <(grep -A1 '^#EXTINF' "$M3U" | grep -Eo 'https?://\S+' || true)
+          echo "解析到 URL 数=${#urls[@]}"
+          if [ "${#urls[@]}" -ne "$m3u_count" ]; then
+            echo "::error::URL 数(${#urls[@]}) 与 EXTINF 数($m3u_count) 不匹配，存在无地址的频道条目"
+            fail=1
+          fi
+          dup=$(printf '%s\n' "${urls[@]}" | sort | uniq -d || true)
+          if [ -n "$dup" ]; then
+            echo "::warning::存在重复 URL："
+            echo "$dup"
+          fi
+
+          # 3) 头部 EPG 地址格式
+          if ! head -1 "$M3U" | grep -q '^#EXTM3U'; then
+            echo "::error::m3u 首行不是 #EXTM3U 头"
+            fail=1
+          fi
+
+          # 4) txt 分组标记
+          genre_count=$(grep -c '#genre#' "$TXT" || true)
+          if [ "$genre_count" -eq 0 ]; then
+            echo "::error::txt 缺少 #genre# 分组标记"
+            fail=1
+          fi
+
+          {
+            echo "## 播放列表自检"
+            echo
+            echo "| 检查项 | 结果 |"
+            echo "|---|---|"
+            echo "| m3u 频道数 | $m3u_count（README 声明 $readme_m3u）|"
+            echo "| txt 频道数 | $txt_count（README 声明 $readme_txt）|"
+            echo "| URL 总数 | ${#urls[@]} |"
+            echo "| 重复 URL | $( [ -n "$dup" ] && echo '有' || echo '无' ) |"
+            echo "| txt 分组数| $genre_count |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          exit $fail
+
+      - name: 校验订阅地址可达
+        id: raw
+        run: |
+          set -uo pipefail
+          bad=0
+          for p in "河南移动/河南移动.m3u" "河南移动/河南移动.txt"; do
+            url="https://raw.githubusercontent.com/nanxunzlq/iptv/main/${p}"
+            enc=$(printf '%s' "$p" | jq -sRr @uri)
+            url="https://raw.githubusercontent.com/nanxunzlq/iptv/main/${enc}"
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -L "$url" || echo 000)
+            echo "$p -> HTTP $code"
+            if [ "$code" != "200" ]; then bad=1; fi
+          done
+          exit $bad
+
+  probe:
+    name: 运营商源实测（手动）
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.probe_streams }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 探活全部频道
+        id: probe
+        run: |
+          set -uo pipefail
+          mkdir -p report
+          grep -A1 '^#EXTINF' 河南移动/河南移动.m3u \
+            | grep -Eo 'https?://\S+' | sort -u > report/urls.txt
+
+          total=$(wc -l < report/urls.txt | tr -d ' ')
+          echo "total=$total" >> "$GITHUB_OUTPUT"
+          echo "共 $total 个链接待测"
+
+          : > report/alive.txt; : > report/dead.txt
+          while read -r url; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 -L --range 0-1024 "$url" 2>/dev/null || echo 000)
+            if [[ "$code" =~ ^(200|206|302)$ ]]; then
+              echo "$url" >> report/alive.txt
+            else
+              echo "$code $url" >> report/dead.txt
+            fi
+          done < report/urls.txt
+
+          alive=$(wc -l < report/alive.txt | tr -d ' ')
+          pct=0; [ "$total" -gt 0 ] && pct=$(( alive * 100 / total ))
+          echo "alive=$alive" >> "$GITHUB_OUTPUT"
+          echo "pct=$pct" >> "$GITHUB_OUTPUT"
+          echo "可用 $alive / $total = $pct%"
+
+      - name: 上传明细
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iptv-probe-detail
+          path: report/
+          retention-days: 30
+
+  notify:
+    name: 失败时开 Issue
+    needs: [lint]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: 创建或更新 Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '[自动巡检]'
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            })
+            const title = `${marker} 仓库自检失败（${new Date().toISOString().slice(0, 10)}）`
+            const body = [
+              '定时自检未通过，请查看本次运行日志定位失败步骤。',
+              '',
+              '- 常见原因：`河南移动/` 下文件更新后 README 频道数未同步',
+              '- 订阅 Raw 地址是否仍返回 200',
+              '',
+              `运行链接：${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            ].join('\n')
+
+            const dup = existing.find((i) => i.title.includes(marker))
+            if (dup) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: dup.number,
+                title,
+                body,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['automation'],
+              })
+            }
