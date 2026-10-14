@@ -25,6 +25,14 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      # 该目录是上游快照，只接收锁文件内的补丁/次版本更新。
+      # 主版本升级会改动 package.json 的声明范围、与上游源码产生分歧，
+      # 且本次实测其破坏性变更风险高于收益，故不接收。
+      # （update-types 过滤只作用于版本更新；安全更新走独立通道，不受此限制。）
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
 
   # tools/iptv-api 子模块指针升级
   - package-ecosystem: gitsubmodule
