@@ -1,5 +1,8 @@
 # IPTV 聚合仓库
 
+[![仓库自检](https://github.com/nanxunzlq/iptv/actions/workflows/iptv-health-check.yml/badge.svg)](https://github.com/nanxunzlq/iptv/actions/workflows/iptv-health-check.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 个人 IPTV 直播源与配套工具一站式合集：
 
 - **河南移动直播源**（核心）—— m3u 完整版 94 频道 + txt 完整版 94 频道（DIYP 格式），收录在 [`河南移动/`](河南移动/) 目录
@@ -23,7 +26,9 @@
 │   ├── iptv-api/             源自动采集/校验/测速/生成（git submodule）
 │   └── iptv-checker/         m3u 链接批量探活 CLI
 ├── .github/
-│   └── workflows/            仓库自检（频道数一致性 / 订阅地址可达性）
+│   ├── workflows/            仓库自检（频道数 / 分组质量 / 等价性 / 订阅地址可达性）
+│   ├── scripts/              自检脚本（m3u ↔ txt 等价性校验）
+│   └── dependabot.yml        依赖与子模块自动更新
 ├── docs/
 │   └── ecosystem.md          IPTV 生态索引
 ├── THIRD-PARTY.md            第三方组件与许可证清单
@@ -49,10 +54,13 @@
 
 | 分类 | 频道数 | 内容 |
 |---|---|---|
-| 央视频道 | 17 | CCTV1 ~ CCTV17（含 CCTV5+） |
-| 卫视频道 | 36 | 全国省级卫视（含河南、三沙、延边、康巴、安多等） |
-| 卡通动漫 | 5 | 金鹰卡通、嘉佳卡通、哈哈炫动等 |
-| 河南地方及其他 | 36 | 河南都市/民生/新闻/4K/梨园/武术世界、中国教育系列、CGTN 多语种等 |
+| 央视频道 | 17 | CCTV1~CCTV15、CCTV17（含 CCTV5+；**CCTV16 暂缺**） |
+| 卫视频道 | 36 | 全国省级卫视（含河南、三沙、延边、康巴、厦门等） |
+| 卡通动漫 | 5 | 金鹰卡通、金鹰纪实、嘉佳卡通、哈哈炫动、欢笑剧场 |
+| 河南地方及其他 | 36 | 河南都市/民生/新闻/法治/4K/梨园/武术世界、中国教育系列、CGTN 多语种、安多卫视、山东教育卫视等 |
+
+> 表中的「分类」即 m3u 中各频道 `group-title` 的实际取值，数量由[仓库自检](#六仓库自检)强制校验。
+> txt（DIYP 格式）按其自身的 8 个分组组织，分组划分与 m3u 不同，但**频道名与 URL 完全相同**。
 
 ### 频道实测状态（2026-10-12）
 
@@ -78,7 +86,7 @@
 m3u 完整版：
 https://raw.githubusercontent.com/nanxunzlq/iptv/main/%E6%B2%B3%E5%8D%97%E7%A7%BB%E5%8A%A8/%E6%B2%B3%E5%8D%97%E7%A7%BB%E5%8A%A8.m3u
 
-txt 精简版：
+txt 完整版：
 https://raw.githubusercontent.com/nanxunzlq/iptv/main/%E6%B2%B3%E5%8D%97%E7%A7%BB%E5%8A%A8/%E6%B2%B3%E5%8D%97%E7%A7%BB%E5%8A%A8.txt
 ```
 
@@ -149,6 +157,20 @@ git submodule update --init --depth 1 tools/iptv-api
 
 来源：`Guovin/iptv-api`（**AGPL-3.0**，见下方许可证说明）
 
+### 依赖维护
+
+本仓库自身没有依赖清单，需要维护的依赖只有两处，均由 `.github/dependabot.yml` 每周自动检查：
+
+| 目标 | 说明 |
+|---|---|
+| `tools/iptv-checker`（npm） | 第三方工具的本地快照。上游已停更（最新版 0.30.3 / 2026-03），因此安全修复只能在本地锁文件上做 |
+| `tools/iptv-api`（git submodule） | 指向上游仓库，由 Dependabot 提出指针升级 PR |
+| `.github/workflows/`（Actions） | 工作流中引用的 action 版本 |
+
+`tools/iptv-checker/package-lock.json` 已于 2026-10 做过一轮定向安全刷新（`axios` 1.13.6 → 1.20.0 等）。剩余 2 个告警（`braces`、`sprintf-js`）**上游尚无修复版本**，且仅存在于 jest/babel 开发链路，不影响工具运行时；升级 `babel-jest` 到 30 可移除该链路，但属破坏性变更，需单独评估。
+
+> 该目录是**上游快照**，接受本地依赖补丁（锁文件级），但不改动上游源码，以便将来同步新版时能干净地比对差异。
+
 ---
 
 ## 四、许可证
@@ -195,9 +217,16 @@ git submodule update --init --depth 1 tools/iptv-api
 |---|---|
 | 频道数一致性 | m3u / txt 的实际频道数必须与上表声明一致，防止改了源忘了改 README |
 | 结构完整性 | m3u 每个 `#EXTINF` 须有对应 URL、URL 不重复、首行为 `#EXTM3U`、txt 含 `#genre#` 分组 |
+| 分组质量 | 每个频道必须带 `group-title`，且 m3u 中不得出现 DIYP 专用的 `#genre#` 语法、分组名不得含逗号 |
+| 分类数量一致 | README 上表 4 个分类的数量必须与 m3u 中各 `group-title` 的实际数量一致 |
+| m3u ↔ txt 等价 | 两版频道名与 URL 必须一一对应（顺序允许不同），由 `.github/scripts/check_playlist_equivalence.py` 校验 |
 | 订阅地址可达 | 两个 Raw 订阅地址须返回 HTTP 200 |
 
 自检失败会自动创建/更新一条 `[自动巡检]` Issue，不会刷屏（同标记 Issue 只保留一条，持续更新）。
+
+> 「分组质量」与「分类数量一致」是 2026-10 新增的守门项：此前 m3u 有 58 个频道的 `group-title`
+> 误混入了 DIYP 的 `#genre#` 语法、另有 36 个频道完全无分组（播放器里会显示成「未分组」）。
+> 这两类缺陷不会影响频道数与 URL 校验，所以单靠旧版自检发现不了。
 
 **为什么不在 CI 里实测直播源**：河南移动源属于运营商内网/宽带环境才可达的服务，
 GitHub Actions 的 ubuntu runner 上必然全红。因此直播源探活被设计为**手动可选**参数
