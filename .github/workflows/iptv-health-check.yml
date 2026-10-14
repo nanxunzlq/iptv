@@ -113,7 +113,7 @@ jobs:
           fi
 
           # ---------- 6) README「频道构成」表 ↔ m3u 实际 group-title 计数 ----------
-          for g in 央视频道 卫视频道 卡通动漫 河南地方及其他; do
+          for g in 央视频道 央视 其它 卫视频道 卫视 山东 河南 4K频道 数字付费 数字频道 东方 北京 少儿 卡通动漫 江苏; do
             declared=$(grep -oP "^\| ${g} \| \K[0-9]+" README.md || echo 0)
             actual=$(grep -c "group-title=\"${g}\"" "$M3U" || true)
             echo "分组「$g」README 声明 $declared / 实际 $actual"
