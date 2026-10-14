@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
-    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-env": "^8.0.7",
     "@jest/globals": "^29.7.0",
     "babel-jest": "^29.7.0",
     "fs-extra": "^11.3.0",
