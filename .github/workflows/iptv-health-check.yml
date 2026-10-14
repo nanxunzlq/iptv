@@ -10,6 +10,7 @@ on:
       - '河南移动/**'
       - 'README.md'
       - '.github/workflows/iptv-health-check.yml'
+      - '.github/scripts/**'
   workflow_dispatch:
     inputs:
       probe_streams:
@@ -51,7 +52,7 @@ jobs:
           echo "txt=$txt_count" >> "$GITHUB_OUTPUT"
           echo "m3u 频道数=$m3u_count txt 频道数=$txt_count"
 
-          # 1) 声明一致性：README 表格中的 94 / 94（频道数可能带 ** 粗体标记）
+          # ---------- 1) 声明一致性：README 表格中的 94 / 94（频道数可能带 ** 粗体标记）----------
           readme_m3u=$(grep -oP 'M3U（含 tvg-id / EPG 地址） \| \*{0,2}\K[0-9]+' README.md || echo 0)
           readme_txt=$(grep -oP 'DIYP（`频道名,URL` \+ `#genre#` 分组） \| \*{0,2}\K[0-9]+' README.md || echo 0)
           echo "README 声明 m3u=$readme_m3u txt=$readme_txt"
@@ -65,7 +66,7 @@ jobs:
             fail=1
           fi
 
-          # 2) 结构完整性：m3u 每个 #EXTINF 后必须有 URL，且 URL 唯一
+          # ---------- 2) 结构完整性：m3u 每个 #EXTINF 后必须有 URL，且 URL 唯一 ----------
           mapfile -t urls < <(grep -A1 '^#EXTINF' "$M3U" | grep -Eo 'https?://\S+' || true)
           echo "解析到 URL 数=${#urls[@]}"
           if [ "${#urls[@]}" -ne "$m3u_count" ]; then
@@ -78,18 +79,49 @@ jobs:
             echo "$dup"
           fi
 
-          # 3) 头部 EPG 地址格式
+          # ---------- 3) 头部 EPG 地址格式 ----------
           if ! head -1 "$M3U" | grep -q '^#EXTM3U'; then
             echo "::error::m3u 首行不是 #EXTM3U 头"
             fail=1
           fi
 
-          # 4) txt 分组标记
+          # ---------- 4) txt 分组标记 ----------
           genre_count=$(grep -c '#genre#' "$TXT" || true)
           if [ "$genre_count" -eq 0 ]; then
             echo "::error::txt 缺少 #genre# 分组标记"
             fail=1
           fi
+
+          # ---------- 5) group-title 质量（历史缺陷：DIYP 语法误混入 m3u、频道无分组）----------
+          no_group=$(grep '^#EXTINF' "$M3U" | grep -vc 'group-title' || true)
+          echo "无 group-title 的频道数=$no_group"
+          if [ "$no_group" -ne 0 ]; then
+            echo "::error::有 $no_group 个频道缺少 group-title，播放器会将其归入「未分组」"
+            fail=1
+          fi
+
+          genre_in_m3u=$(grep -c '#genre#' "$M3U" || true)
+          if [ "$genre_in_m3u" -ne 0 ]; then
+            echo "::error::m3u 中混入了 DIYP 专用的 #genre# 语法（$genre_in_m3u 处）—— m3u 的分组名应为纯文本"
+            fail=1
+          fi
+
+          bad_group=$(grep -oP 'group-title="[^"]*"' "$M3U" | grep -c '[，,]' || true)
+          if [ "$bad_group" -ne 0 ]; then
+            echo "::error::有 $bad_group 个 group-title 值内含逗号，多为误从 DIYP 格式粘贴所致"
+            fail=1
+          fi
+
+          # ---------- 6) README「频道构成」表 ↔ m3u 实际 group-title 计数 ----------
+          for g in 央视频道 卫视频道 卡通动漫 河南地方及其他; do
+            declared=$(grep -oP "^\| ${g} \| \K[0-9]+" README.md || echo 0)
+            actual=$(grep -c "group-title=\"${g}\"" "$M3U" || true)
+            echo "分组「$g」README 声明 $declared / 实际 $actual"
+            if [ "$declared" != "$actual" ]; then
+              echo "::error::分组「$g」README 声明 $declared 个，实际 $actual 个 —— 请同步更新 README 或 m3u"
+              fail=1
+            fi
+          done
 
           {
             echo "## 播放列表自检"
@@ -101,9 +133,15 @@ jobs:
             echo "| URL 总数 | ${#urls[@]} |"
             echo "| 重复 URL | $( [ -n "$dup" ] && echo '有' || echo '无' ) |"
             echo "| txt 分组数| $genre_count |"
+            echo "| 缺少 group-title | $no_group |"
+            echo "| m3u 中 #genre# 残留 | $genre_in_m3u |"
+            echo "| group-title 含逗号 | $bad_group |"
           } >> "$GITHUB_STEP_SUMMARY"
 
           exit $fail
+
+      - name: 校验 m3u 与 txt 等价（频道与 URL 逐一对应）
+        run: python3 .github/scripts/check_playlist_equivalence.py
 
       - name: 校验订阅地址可达
         id: raw
@@ -189,6 +227,8 @@ jobs:
               '',
               '- 常见原因：`河南移动/` 下文件更新后 README 频道数未同步',
               '- 订阅 Raw 地址是否仍返回 200',
+              '- `group-title` 缺失或混入 DIYP 的 `#genre#` 语法',
+              '- m3u 与 txt 的频道/URL 不再一一对应',
               '',
               `运行链接：${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
             ].join('\n')
