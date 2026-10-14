@@ -1,0 +1,52 @@
+version: 2
+
+updates:
+  # 第三方工具快照的依赖（上游已停更，安全修复只能落在本地锁文件上）
+  - package-ecosystem: npm
+    directory: /tools/iptv-checker
+    schedule:
+      interval: weekly
+      day: monday
+      time: '03:40'
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: 'chore(deps)'
+    labels:
+      - dependencies
+    groups:
+      dev-minor-patch:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+      prod-minor-patch:
+        dependency-type: production
+        update-types:
+          - minor
+          - patch
+
+  # tools/iptv-api 子模块指针升级
+  - package-ecosystem: gitsubmodule
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '03:50'
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: 'chore(submodule)'
+    labels:
+      - dependencies
+
+  # workflow 中引用的 action
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: 'chore(ci)'
+    labels:
+      - dependencies
