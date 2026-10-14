@@ -44,7 +44,7 @@
 
 | 文件 | 格式 | 频道数 | 适用场景 |
 |---|---|---|---|
-| [`河南移动.m3u`](河南移动/河南移动.m3u) | M3U（含 tvg-id / EPG 地址） | **95** | PotPlayer、TiviMate、IPTVnator 等标准播放器，**推荐** |
+| [`河南移动.m3u`](河南移动/河南移动.m3u) | M3U（含 tvg-id / EPG 地址） | **94** | PotPlayer、TiviMate、IPTVnator 等标准播放器，**推荐** |
 | [`河南移动.txt`](河南移动/河南移动.txt) | DIYP（`频道名,URL` + `#genre#` 分组） | **94** | DIYP / 影视类安卓应用 |
 
 > 两版频道**完全一致**（94 个频道、URL 逐一相同），区别只在格式：m3u 带 `tvg-id` 与 EPG 地址，txt 是 DIYP 应用专用的 `频道名,URL` 分组格式。
