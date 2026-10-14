@@ -43,7 +43,7 @@
     "get-stdin": "^9.0.0",
     "iptv-playlist-parser": "^0.15.2",
     "msw": "^2.7.3",
-    "normalize-url": "^8.0.1",
+    "normalize-url": "^9.0.1",
     "progress": "^2.0.3",
     "socks-proxy-agent": "^8.0.5",
     "valid-url": "^1.0.9"
