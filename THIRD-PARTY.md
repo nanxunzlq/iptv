@@ -10,21 +10,14 @@
 
 | 路径 | 上游仓库 | 许可证 | 纳入方式 | 快照 commit |
 |---|---|---|---|---|
-| `lists/Beijing-IPTV/` | [qwerttvv/Beijing-IPTV](https://github.com/qwerttvv/Beijing-IPTV) | CC0-1.0 | 文件快照 | `1ef9ce01` |
 | `tools/iptv-checker/` | [freearhey/iptv-checker](https://github.com/freearhey/iptv-checker) | MIT | 文件快照 | `6265833d` |
-| `tools/iptv-api/` | [Guovin/iptv-api](https://github.com/Guovin/iptv-api) | **AGPL-3.0** | git submodule | `27d7f846`（随上游滚动） |
+| `tools/iptv-api/` | [Guovin/iptv-api](https://github.com/Guovin/iptv-api) | **AGPL-3.0** | git submodule | `2a4d925`（随上游滚动） |
 
 `docs/ecosystem.md` 由本仓库原有的 `iptv-org` 仓库内容整理而来（本项目自有）。
 
 ---
 
 ## 二、版权与许可证全文
-
-### `lists/Beijing-IPTV/`
-- **许可证**：Creative Commons Zero v1.0 Universal（CC0-1.0）
-- **版权**：qwerttvv
-- **全文**：见 [`lists/Beijing-IPTV/LICENSE`](lists/Beijing-IPTV/LICENSE)
-- **条款要点**：CC0 等同于放弃全部著作权，进入公共领域。可自由使用、修改、分发，**无任何附加条件**。
 
 ### `tools/iptv-checker/`
 - **许可证**：MIT License
@@ -47,13 +40,12 @@
 
 ### 为什么 `iptv-api` 采用子模块隔离
 
-AGPL-3.0 的 copyleft 范围覆盖"组合作品"（combined work）。若将其源代码直接复制进本仓库的普通目录，本仓库在法理上会被视为包含 AGPL 代码的组合作品，从而**整个仓库都需要以 AGPL-3.0 发布** —— 这将使本仓库的自有部分（`hn.txt` 等）无法继续以 MIT 提供。
+AGPL-3.0 的 copyleft 范围覆盖"组合作品"（combined work）。若将其源代码直接复制进本仓库的普通目录，本仓库在法理上会被视为包含 AGPL 代码的组合作品，从而**整个仓库都需要以 AGPL-3.0 发布** —— 这将使本仓库的自有部分（`河南移动/` 等）无法继续以 MIT 提供。
 
 采用 git submodule 后，它是主仓库中一个**指向独立仓库的引用**（仅记录一个 commit SHA），上游内容独立存在于其自身仓库中，法律上是独立作品。本仓库的 MIT 部分因此不受 AGPL 传染。
 
 ### 使用者的义务
 
-- 使用 `lists/Beijing-IPTV/` 的内容：无附加义务（CC0）
 - 使用 `tools/iptv-checker/`：保留其版权声明与 LICENSE
 - 使用 `tools/iptv-api/`：**须遵守 AGPL-3.0**，包括但不限于衍生作品同许可证开源；若以网络服务形式对外提供，须向服务使用者提供源码
 
@@ -65,7 +57,7 @@ AGPL-3.0 的 copyleft 范围覆盖"组合作品"（combined work）。若将其�
 # 子模块（iptv-api）：直接跟随上游
 git submodule update --remote --depth 1 tools/iptv-api
 
-# 文件快照（Beijing-IPTV / iptv-checker）：需手动重新拉取并覆盖
+# 文件快照（iptv-checker）：需手动重新拉取并覆盖
 # 参考上游仓库地址见上方清单
 ```
 

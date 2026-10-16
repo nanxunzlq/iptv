@@ -129,12 +129,6 @@ http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227352/index.m3u8
 http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227200/index.m3u8
 #EXTINF:-1 group-title="其它",中国教育4台·备用线路1
 http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227331/index.m3u8
-#EXTINF:-1 tvg-id="北京卫视" tvg-name="北京卫视" group-title="卫视频道",北京卫视
-http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221226452/index.m3u8
-#EXTINF:-1 group-title="卫视",北京卫视·备用线路1
-http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221226519/index.m3u8
-#EXTINF:-1 group-title="卫视",北京卫视·备用线路2
-http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227458/index.m3u8
 #EXTINF:-1 tvg-id="天津卫视" tvg-name="天津卫视" group-title="卫视频道",天津卫视
 http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221226422/index.m3u8
 #EXTINF:-1 group-title="卫视",天津卫视·备用线路1
@@ -411,12 +405,6 @@ http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221226447/index.m3u8
 http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227382/index.m3u8
 #EXTINF:-1 tvg-id="CCTV4k" tvg-name="CCTV4k" group-title="4K频道",CCTV4K·备用线路1
 http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227426/index.m3u8
-#EXTINF:-1 tvg-id="北京卫视" tvg-name="北京卫视" group-title="4K频道",北京卫视4K
-http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221226677/index.m3u8
-#EXTINF:-1 group-title="卫视",北京卫视4K·备用线路1
-http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227411/index.m3u8
-#EXTINF:-1 group-title="卫视",北京卫视4K·备用线路2
-http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227424/1.m3u8?fmt=ts2hls
 #EXTINF:-1 tvg-id="东方卫视" tvg-name="东方卫视" group-title="4K频道",东方卫视4K
 http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227427/index.m3u8
 #EXTINF:-1 tvg-id="江苏卫视" tvg-name="江苏卫视" group-title="4K频道",江苏卫视4K
@@ -531,8 +519,6 @@ http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221226536/index.m3u8
 http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221226877/1.m3u8?fmt=ts2hls
 #EXTINF:-1 group-title="其它",收藏天下
 http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221226858/1.m3u8?fmt=ts2hls
-#EXTINF:-1 group-title="北京",北京纪实科教
-http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227408/index.m3u8
 #EXTINF:-1 group-title="其它",咪咕视频
 http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227258/1.m3u8?fmt=ts2hls
 #EXTINF:-1 tvg-id="欢笑剧场" tvg-name="欢笑剧场" group-title="数字频道",欢笑剧场

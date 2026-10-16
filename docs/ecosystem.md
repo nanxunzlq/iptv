@@ -18,8 +18,7 @@
 
 | 组件 | 路径 | 来源 | 许可证 |
 |---|---|---|---|
-| 河南移动直播源 | [`hn.txt`](../hn.txt) | 自有 | MIT |
-| 北京频道列表 | [`lists/Beijing-IPTV/`](../lists/Beijing-IPTV/) | qwerttvv/Beijing-IPTV | CC0-1.0 |
+| 河南移动直播源 | [`河南移动/`](../河南移动/) | 自有 | MIT |
 | m3u 链接探活 | [`tools/iptv-checker/`](../tools/iptv-checker/) | freearhey/iptv-checker | MIT |
 | 源自动生成 | `tools/iptv-api/` | Guovin/iptv-api | AGPL-3.0 |
 
@@ -32,10 +31,10 @@
                       ↓
 ② 质量校验     tools/iptv-checker  →  剔除失效链接
                       ↓
-③ 分发使用     hn.txt / lists/Beijing-IPTV/*.m3u  →  填入播放器订阅
+③ 分发使用     河南移动/河南移动.m3u 或 .txt  →  填入播放器订阅
 ```
 
-- **只要现成源**：直接用 `hn.txt` 或 `lists/Beijing-IPTV/` 下的 m3u
+- **只要现成源**：直接用 `河南移动/` 下的 m3u 或 txt
 - **要自建可持续的源**：用 `tools/iptv-api` 生成，再用 `tools/iptv-checker` 校验
 
 ---
@@ -45,7 +44,6 @@
 - [iptv-org/iptv](https://github.com/iptv-org/iptv) — 全球公开频道总源
 - [Guovin/iptv-api](https://github.com/Guovin/iptv-api) — 源自动更新工具上游
 - [freearhey/iptv-checker](https://github.com/freearhey/iptv-checker) — 链接探活工具上游
-- [qwerttvv/Beijing-IPTV](https://github.com/qwerttvv/Beijing-IPTV) — 北京频道列表上游
 
 ---
 

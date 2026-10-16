@@ -52,7 +52,7 @@ jobs:
           echo "txt=$txt_count" >> "$GITHUB_OUTPUT"
           echo "m3u 频道数=$m3u_count txt 频道数=$txt_count"
 
-          # ---------- 1) 声明一致性：README 表格中的 94 / 94（频道数可能带 ** 粗体标记）----------
+          # ---------- 1) 声明一致性：README 表格声明的频道数（可能带 ** 粗体标记）----------
           readme_m3u=$(grep -oP 'M3U（含 tvg-id / EPG 地址） \| \*{0,2}\K[0-9]+' README.md || echo 0)
           readme_txt=$(grep -oP 'DIYP（`频道名,URL` \+ `#genre#` 分组） \| \*{0,2}\K[0-9]+' README.md || echo 0)
           echo "README 声明 m3u=$readme_m3u txt=$readme_txt"
@@ -113,7 +113,7 @@ jobs:
           fi
 
           # ---------- 6) README「频道构成」表 ↔ m3u 实际 group-title 计数 ----------
-          for g in 央视频道 央视 其它 卫视频道 卫视 山东 河南 4K频道 数字付费 数字频道 东方 北京 少儿 卡通动漫 江苏; do
+          for g in 央视频道 央视 其它 卫视频道 卫视 山东 河南 4K频道 数字付费 数字频道 东方 少儿 卡通动漫 江苏; do
             declared=$(grep -oP "^\| ${g} \| \K[0-9]+" README.md || echo 0)
             actual=$(grep -c "group-title=\"${g}\"" "$M3U" || true)
             echo "分组「$g」README 声明 $declared / 实际 $actual"
