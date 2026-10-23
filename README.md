@@ -8,6 +8,7 @@
 - **直播源** — 283 条频道 / 14 个分组，含 EPG 与备用线路；m3u 与 txt 的频道名、URL、分组逐一一致
 - **工具链** — `iptv-checker` 批量探活、`iptv-api` 采集生成（git submodule）
 - **质量保障** — GitHub Actions 每周校验结构、分组数量、双格式等价性与订阅地址可达性
+- **跨运营商对照** — 河南移动 132 个频道逐一匹配河南电信源，输出对照表与双向缺口清单
 
 > **网络要求**：直播源是河南移动宽带环境下的运营商内网地址（`iptv.cdn.ha.chinamobile.com`），其他网络环境无法播放。
 
@@ -36,6 +37,7 @@
 | 链接探活 | 用 `tools/iptv-checker` 批量检测播放列表中的链接，输出可用 / 失效两份清单 |
 | 源自动生成 | 用 `tools/iptv-api` 完成采集 → 聚合 → 测速 → 生成播放列表 |
 | 一致性校验 | 用 GitHub Actions 校验频道数、分组质量、双格式等价性与订阅地址可达性 |
+| 跨运营商对照 | 将河南移动频道逐一映射到河南电信源，输出对照表与双向缺口清单（见 `docs/`） |
 
 ## 主要特性
 
@@ -155,6 +157,7 @@ git submodule update --init --depth 1 tools/iptv-api
 
 > 表中的「分类」即两个文件中 `group-title` / `#genre#` 的实际取值，数量由[自检工作流](#自动化与维护)强制校验。
 > m3u 与 txt 使用同一套 14 个分组，频道名、URL、分组逐一相同（仅排列顺序不同）。
+> 另附[《河南移动 ↔ 河南电信 频道对照表》](docs/河南移动-河南电信频道对照.md)：132 个移动频道逐一匹配电信源 58 条，命中 54 个、缺口 78 个。
 
 ### EPG 节目单
 
@@ -194,7 +197,8 @@ m3u 头部已内置 EPG 地址（`epg.51zmt.top` 的 `cc.xml` 与 `difang.xml`�
 │   ├── scripts/              # m3u ↔ txt 等价性校验脚本
 │   └── dependabot.yml        # 依赖与子模块更新
 ├── docs/
-│   └── ecosystem.md          # IPTV 生态索引
+│   ├── ecosystem.md          # IPTV 生态索引
+│   └── 河南移动-河南电信频道对照.md # 移动 ↔ 电信频道对照与缺口
 ├── THIRD-PARTY.md            # 第三方组件与许可证清单
 ├── LICENSE                   # MIT（仅适用于本仓库自有内容）
 └── .gitmodules               # submodule 定义
@@ -271,6 +275,7 @@ Node.js CLI，基于 `ffprobe` 批量检查 IPTV 播放列表中的链接是否�
 
 - [THIRD-PARTY.md](THIRD-PARTY.md) — 第三方组件、来源与许可证
 - [docs/ecosystem.md](docs/ecosystem.md) — IPTV 生态索引与链路串接方式
+- [docs/河南移动-河南电信频道对照.md](docs/河南移动-河南电信频道对照.md) — 移动 132 个频道与电信源的逐一对照及双向缺口
 - [Actions 运行记录](https://github.com/nanxunzlq/iptv/actions) — 自检历史
 - [Issues](https://github.com/nanxunzlq/iptv/issues) — 问题反馈与自动巡检报告
 - 上游项目：[iptv-org/iptv](https://github.com/iptv-org/iptv)、[Guovin/iptv-api](https://github.com/Guovin/iptv-api)、[freearhey/iptv-checker](https://github.com/freearhey/iptv-checker)
