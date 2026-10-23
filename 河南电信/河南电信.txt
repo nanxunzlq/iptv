@@ -44,7 +44,6 @@ CETV1,http://219.150.217.47:6610/PLTV1/400/index.m3u8?icpid=dxrm1
 甘肃卫视,http://219.150.217.47:6610/PLTV1/1500/index.m3u8?icpid=dxrm1
 河南,#genre#
 河南卫视,http://219.150.217.47:6610/PLTV1/580/index.m3u8?icpid=dxrm1
-河南卫视4K测试,http://219.150.217.47:6610/PLTV2/2780/index.m3u8?icpid=dxrm1
 都市频道,http://219.150.217.47:6610/PLTV1/600/index.m3u8?icpid=dxrm1
 民生频道,http://219.150.217.47:6610/PLTV1/620/index.m3u8?icpid=dxrm1
 法治频道,http://219.150.217.47:6610/PLTV1/640/index.m3u8?icpid=dxrm1
