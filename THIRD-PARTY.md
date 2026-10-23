@@ -2,7 +2,7 @@
 
 本仓库聚合了来自多个上游项目的代码与数据。**各组件版权归原作者所有，适用各自的许可证条款**，本仓库的 MIT 许可证仅覆盖自有内容。
 
-快照时间：2026-09-16
+快照时间：工具链 2026-09-16；河南电信源 2026-07-10
 
 ---
 
@@ -12,6 +12,7 @@
 |---|---|---|---|---|
 | `tools/iptv-checker/` | [freearhey/iptv-checker](https://github.com/freearhey/iptv-checker) | MIT | 文件快照 | `6265833d` |
 | `tools/iptv-api/` | [Guovin/iptv-api](https://github.com/Guovin/iptv-api) | **AGPL-3.0** | git submodule | `2a4d925`（随上游滚动） |
+| `河南电信/` | [pdszhh/河南电信IPTV.m3u](https://gist.github.com/pdszhh/2191e41f635dd6db19ece147c32cdcae) | 未声明 | 格式转换（M3U → DIYP） | 2026-07-10 |
 
 `docs/ecosystem.md` 由本仓库原有的 `iptv-org` 仓库内容整理而来（本项目自有）。
 
@@ -33,6 +34,13 @@
   - 允许使用、修改、分发，但**衍生作品必须以 AGPL-3.0 开源**
   - **网络服务条款**：即使只在服务器上运行而不分发二进制，只要通过网络向用户提供服务，**也必须向使用者提供完整源码**
   - 保留版权声明与许可证文本
+
+### `河南电信/`
+
+- **来源**：GitHub Gist [`pdszhh/河南电信IPTV.m3u`](https://gist.github.com/pdszhh/2191e41f635dd6db19ece147c32cdcae)（2026-07-10 更新）
+- **许可证**：上游未声明许可证。本仓库仅做**格式转换**（M3U → DIYP txt）并补齐 m3u 的 EPG 头，未改动频道名、播放地址与分组
+- **可播性**：不属本仓库保证范围；2026-10-23 实测 58 条中 57 条可播，且仅河南电信宽带可用
+- **移除机制**：若上游或权利人提出异议，可整目录删除，不影响 `河南移动/` 与工具链
 
 ---
 
